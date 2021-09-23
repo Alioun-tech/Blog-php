@@ -1,8 +1,8 @@
 <?php
 require_once './models/modelBackend.php';
-function getAllPosts()
+function showAllArticle()
 {
-    $posts = getPosts();
+    $posts = getPostsAdmin();
     if (!$posts) {
         $message = 'Aucun article récupérer!!';
     } else {
@@ -21,65 +21,74 @@ function getAllPosts()
 
 function addOneArticle()
 {
+if (isset($_POST)) {
     if (!empty($_POST)) {
-
-        addPosts($_POST['titre'], $_POST['chapo'], $_POST['contenu'], $_POST['date_post'], $_POST['id_User'], $_FILES['image_post']['name']);
+        addPosts($_POST['titre'], $_POST['chapo'], $_POST['contenu'], $_POST['date_post'], $_POST['id_User'], $_POST['image_post']);
         $image = $_FILES['image_post']['name'];
         $imagePath = '../img/imag' . basename($image);
         $extensions = pathinfo($imagePath, PATHINFO_EXTENSION);
 
+    
 
         if (!empty($image)) {
             if (file_exists($imagePath)) {
-                $imageError = "Le fichier existe déjà";
+                $message = "Le fichier existe déjà";
             }
             if ($_FILES["image_post"]["size"] > 600000) {
-                $sizeError = "Le fichier ne doit pas dépasser 600000";
+                $message = "Le fichier ne doit pas dépasser 600000";
             }
         }
         require_once './views/backEnd/addPosts.php';
     }
 }
 
-function updateArticle()
+    
+}
+
+function updateArticle($id)
 {
-    if (!empty($_POST)) {
-        $data = getPosts();
-        updatePosts($_POST['titre'], $_POST['chapo'], $_POST['contenu'], $_FILES['image_post']['name']);
-        $image = $_FILES['image_post']['name'];
-        $imagePath = '../img/imag' . basename($image);
-        $extensions = pathinfo($imagePath, PATHINFO_EXTENSION);
-        $fileName = $_FILES['image_post']['tmp_name'];
-
-        if (!empty($image)) {
-            if (file_exists($imagePath)) {
-                $imageError = "Le fichier existe déjà";
-            }
-            if ($_FILES["image_post"]["size"] > 600000) {
-                $sizeError = "Le fichier ne doit pas dépasser 600000";
-            }
-
-            if (move_uploaded_file($fileName, $imagePath)) {
-                echo 'image uploader';
-            } else {
-                echo 'image not uploader';
-            }
-            header("Location: ./dashboard.php");
-        }
+    $updateData = getPosts($id);
+    if (!$updateData) {
+        $message = "Aucun n'article affiché";
+    } else {
         require_once './views/backEnd/updatePosts.php';
+    }
+    if (isset($_POST)) {
+        if (!empty($_POST['titre']) && !empty($_POST['chapo']) && !empty($_POST['contenu']) && !empty($_POST['image_post']['name'])) {
+            $result = updatePosts($id);
+
+            if (!$result) {
+                $message = "Un problème est survenue lors de la mise à jour de l'article";
+
+                header('Location: controllerListe/getAllArticle');
+            } else {
+                $success = "Les mise à jours ont été bien effectuées";
+            }
+        } else {
+            $message = "Tous les champs sont requis";
+        }
+        require_once './views/errors.php';
     }
 }
 
-function deleteArticle()
+function deleteArticle($id)
 {
-    if (!empty($_GET['action']) && !empty($_POST)) {
-        $id = getID();
+    $deleteData = getPost($id);
+    if (!$deleteData) {
+        $message = "Aucun n'article supprimer";
+    } else {
+        require_once './views/backEnd/deletePosts.php';
     }
-    if (!empty($_POST)) {
-        $id = $_POST['id_Posts'];
+
+    if (isset($_POST['delete'])) {
+        $resultDelete = deletePosts($id);
+        if ($resultDelete) {
+            $message = "Article non supprimé";
+        }else{
+            $success = "Le message a bien été suppirmer";
+        }
     }
-    deletePosts();
-    require_once './views/backEnd/deletePosts.php';
+    require_once './views/errors.php';
 }
 
 function updateImage()

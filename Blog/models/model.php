@@ -48,6 +48,28 @@ function getComments($id)
     return $comments;
 }
 
+
+function addUser($pseudo, $nom, $prenom, $mail, $password){
+    $dbb = connexionDataBase();
+    $req = 'INSERT INTO user(pseudo, nom, prenom, mail, mot_de_passe) VALUES(?,?,?,?,?)';
+    $add = $dbb->prepare($req);
+    $addUser = $add->execute(array($pseudo, $nom, $prenom, $mail, $password));
+
+    return $addUser;
+}
+
+
+function getMailExist($mail){
+    $dbb = connexionDataBase();
+    $req = "SELECT * FROM user WHERE mail = '$mail'";
+    $result = $dbb->query($req);
+
+    $data = $result->fetch(PDO::FETCH_ASSOC);
+    return $data;
+}
+
+
+
 /*
 function getID(){
     $dbb = connexionDataBase();

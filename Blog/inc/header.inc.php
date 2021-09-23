@@ -13,7 +13,7 @@
           <i class="fas fa-search"></i>
         </span>
       </form>
-      <a type="button" class="btn btn-sm btn-outline-secondary" href="./login.php">
+      <a type="button" class="btn btn-sm btn-outline-secondary" href="controller/connected">
         Login
       </a>
     </div>

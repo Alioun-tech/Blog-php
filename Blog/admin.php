@@ -1,10 +1,8 @@
 <?php
-define('WEBROOT',str_replace('acceuil.php','',$_SERVER['SCRIPT_NAME']));
-define('ROOT',str_replace('acceuil.php','',$_SERVER['SCRIPT_FILENAME']));
+define('WEBROOT',str_replace('admin.php','',$_SERVER['SCRIPT_NAME']));
+define('ROOT',str_replace('admin.php','',$_SERVER['SCRIPT_FILENAME']));
 
-require (ROOT.'./models/model.php');
 require (ROOT.'./models/modelBackend.php');
-require (ROOT.'./controllers/controller.php');
 require (ROOT.'./controllers/controllerListe.php');
 
 if (isset($_GET['action'])){
@@ -16,7 +14,7 @@ if (isset($_GET['action'])){
         if (isset($params[1])) {
             $action = $params[1];
         }
-        require_once('controllers/'.$controller.'.php');
+        require_once('controllers/admin/'.$controller.'.php');
 
         if(function_exists($action)){
             if (isset($params[2]) && isset($params[3])) {
@@ -29,7 +27,7 @@ if (isset($_GET['action'])){
         }
     }
 }else{
-    require_once ('controllers/controller.php');
+
     require_once ('controllers/controllerListe.php');
-    getAllArticle();
+    showAllArticle();
 }

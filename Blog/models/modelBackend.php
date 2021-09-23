@@ -1,5 +1,5 @@
 <?php
-function connexionDataBase(){
+function connexionDataBases(){
     $hostname = 'localhost';
     $username = 'root';
     $password = '';
@@ -13,17 +13,17 @@ function connexionDataBase(){
     return $db;
 }
 
-function getPosts(){
-    $dbb = connexionDataBase();
+function getPostsAdmin(){
+    $dbb = connexionDataBases();
     $req = 'SELECT id_Posts, titre, chapo, contenu,image_post, DATE_FORMAT(date_post, \'%d/%m/%Y à %Hh%imin%ss\') AS date_post FROM posts ORDER BY date_post DESC LIMIT 0, 5';
     $posts = $dbb->query($req);
 
     return $posts;
 }
 
-function getPost($id){
+function getPostAdmin($id){
     $id = getID();
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $requete = $dbb->prepare('SELECT * FROM posts WHERE id_Posts=?');
     $requete->execute(array($id));
     $article = $requete->fetch();
@@ -32,9 +32,9 @@ function getPost($id){
 }
 
 
-function getComments($id){
+function getCommentsAdmin($id){
     $id = getID();
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $comments = $dbb->prepare('SELECT * FROM commentaires WHERE id_Posts = ? ORDER BY id_commentaires DESC');
     $comments->execute(array($id));
 
@@ -43,39 +43,50 @@ function getComments($id){
 }
 
 function addPosts($titre, $chapo, $contenu, $image, $date, $auteur){
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $req = $dbb->prepare("INSERT INTO posts (titre, chapo, contenu, image_post, date_post, id_User)
                             VALUES(?,?,?,?,?,?)");
     $req->execute(array($titre, $chapo, $contenu, $image, $date, $auteur));
+    $resultAdd = $req;
+
+    return $resultAdd;
 }
 
 function addComments(){
     $id = getID();
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $com = $dbb->prepare('SELECT * FROM commentaires WHERE id_Posts = ? ORDER BY id_commentaires DESC');
     $com->execute(array($id));
 
     return $com;
 }
 
-function updatePosts($titre, $chapo, $contenu, $image){
-    $id = $id = getID();
-    $dbb = connexionDataBase();
-    $req = $dbb->prepare("UPDATE  posts SET titre=?, chapo=?, contenu=?, image_post=? WHERE posts.id_Posts=?");
-    $req->execute(array($titre, $chapo, $contenu, $image, $id));
+function updatePosts($id){
+    $id = getID();
+    $dbb = connexionDataBases();
+    $req = $dbb->prepare("UPDATE  posts SET titre=:titre, chapo=:chapo, contenu=:contenu, image_post=:image_post WHERE posts.id_Posts=?");
+    $req->bindValue(':titre', $_POST['titre']);
+    $req->bindValue(':chapo', $_POST['chapo']);
+    $req->bindValue(':contenu', $_POST['contenu']);
+    $req->bindValue(':image_post', $_POST['image_post']['name']);
+    $req->bindValue(':id_Posts', $id);
 
-    return $req;
+    $resultUpdate = $req->execute();
+    return $resultUpdate;
 }
 
-function deletePosts(){
+function deletePosts($id){
     $id = getID();
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $req = $dbb->prepare("DELETE FROM posts WHERE id_Posts=?");
     $req->execute(array($id));
+
+    $resultDelete = $req;
+    return $resultDelete;
 }
 
 function getID(){
-    $dbb = connexionDataBase();
+    $dbb = connexionDataBases();
     $requete = $dbb->prepare('SELECT * FROM posts WHERE id_Posts=?');
     $requete->execute(array($_GET['action']));
     $id = $requete->fetch();

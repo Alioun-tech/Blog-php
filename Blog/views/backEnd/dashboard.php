@@ -9,13 +9,13 @@ include './inc/head.admin.inc.php';
 <body>
     <!-- Navbar -->
     <?php
-    include '.inc/menu.admin.inc.php';
+    include './inc/menu.admin.inc.php';
     ?>
     <!-- Navbar -->
     <div class="container py-5">
         <div class="row">
             <h2 class="text-center">Liste des Articles</h2>
-
+                <h4 class="text-center"><?= $nb_posts ?> Article </h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -35,9 +35,9 @@ include './inc/head.admin.inc.php';
                             <td> <?= $item['image_post'] ?></td>
                             <td> <?= $item['date_post'] ?></td>
                             <td>
-                                <a class="btn btn-secondary" href="showPosts.php?action=<?= $item['id_Posts'] ?>">Voir</a>
-                                <a class="btn btn-success" href="updatePosts.php?action=<?= $item['id_Posts'] ?>">Modifier</a>
-                                <a class="btn btn-danger" href="deletePosts.php?action=<?= $item['id_Posts'] ?>">Suprimer</a>
+                                <a class="btn btn-secondary" href="controllerListe/getOneArticle/<?= $item['id_Posts'] ?>">Voir</a>
+                                <a class="btn btn-success" href="controllerListe/updateArticle/<?= $item['id_Posts'] ?>">Modifier</a>
+                                <a class="btn btn-danger" href="controllerListe/deleteArticle/<?= $item['id_Posts'] ?>">Suprimer</a>
                             </td>
                         </tr>
                     <?php }
